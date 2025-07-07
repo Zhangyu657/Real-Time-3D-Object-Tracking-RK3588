@@ -1,20 +1,11 @@
-/* #include "KalmanFilter3D.h"
+﻿/* #include "KalmanFilter3D.h"
 
-// 构造函数
+
 KalmanFilter3D::KalmanFilter3D() : initialized_(false) {
-    // 状态量维度：6 (x, y, z, vx, vy, vz)
-    // 测量量维度：3 (x, y, z)
     int stateDim = 6;
     int measureDim = 3;
     kf_ = cv::KalmanFilter(stateDim, measureDim, 0, CV_32F);
 
-    // 状态转移矩阵 F - 匀速运动模型
-    // x_k = x_{k-1} + vx_{k-1}*dt
-    // y_k = y_{k-1} + vy_{k-1}*dt
-    // ...
-    // vx_k = vx_{k-1}
-    // ...
-    // dt=1 (因为我们是逐帧处理)
     cv::setIdentity(kf_.transitionMatrix);
     kf_.transitionMatrix.at<float>(0, 3) = 1.0f;
     kf_.transitionMatrix.at<float>(1, 4) = 1.0f;
@@ -27,28 +18,22 @@ KalmanFilter3D::KalmanFilter3D() : initialized_(false) {
     kf_.measurementMatrix.at<float>(1, 1) = 1.0f;
     kf_.measurementMatrix.at<float>(2, 2) = 1.0f;
 
-    // 过程噪声协方差矩阵 Q - 代表我们对运动模型的信任程度
-    // 值越小，代表我们越相信物体会保持匀速运动，轨迹会更平滑但可能跟不上突变
     cv::setIdentity(kf_.processNoiseCov, cv::Scalar::all(1e-3));
 
-    // 测量噪声协方差矩阵 R - 代表我们对测量值(3D质心)的信任程度
-    // 值越大，代表我们认为测量值噪声越大、越不可信，轨迹会更平滑但响应更慢
     cv::setIdentity(kf_.measurementNoiseCov, cv::Scalar::all(1e-2));
 
-    // 后验误差协方差矩阵 P
+
     cv::setIdentity(kf_.errorCovPost, cv::Scalar::all(1));
 
-    // 初始化测量矩阵
     measurement_ = cv::Mat(measureDim, 1, CV_32F);
 }
 
-// 初始化滤波器
 void KalmanFilter3D::init(const cv::Point3f& initial_pos) {
-    // 使用第一个测量点初始化状态向量
+
     kf_.statePost.at<float>(0) = initial_pos.x;
     kf_.statePost.at<float>(1) = initial_pos.y;
     kf_.statePost.at<float>(2) = initial_pos.z;
-    // 初始速度设为0
+
     kf_.statePost.at<float>(3) = 0;
     kf_.statePost.at<float>(4) = 0;
     kf_.statePost.at<float>(5) = 0;
@@ -93,9 +78,9 @@ std::vector<cv::Point3f> KalmanFilter3D::predict_future(int steps) {
 
     // 循环预测指定的步数
     for (int i = 0; i < steps; ++i) {
-        // 使用状态转移矩阵 F 乘以当前状态，得到下一个状态
+       
         temp_state = kf_.transitionMatrix * temp_state;
-        // 从预测出的状态向量中提取出位置信息 (x, y, z)
+ 
         future_points.emplace_back(temp_state.at<float>(0), temp_state.at<float>(1), temp_state.at<float>(2));
     }
 
@@ -106,13 +91,11 @@ std::vector<cv::Point3f> KalmanFilter3D::predict_future(int steps) {
 #include <cmath>
 
 KalmanFilter3D::KalmanFilter3D() : initialized_(false) {
-    // 状态量维度：6 (x, y, z, vx, vy, vz)
-    // 测量量维度：3 (x, y, z)
+
     int stateDim = 6;
     int measureDim = 3;
     kf_ = cv::KalmanFilter(stateDim, measureDim, 0, CV_32F);
 
-    // 状态转移矩阵 F - 匀速运动模型，考虑时间间隔dt
     float dt = 1.0f; // 假设帧率为30fps
     kf_.transitionMatrix = (cv::Mat_<float>(6, 6) <<
         1, 0, 0, dt, 0, 0,
@@ -122,15 +105,14 @@ KalmanFilter3D::KalmanFilter3D() : initialized_(false) {
         0, 0, 0, 0, 1, 0,
         0, 0, 0, 0, 0, 1);
 
-    // 测量矩阵 H - 只测量位置
+  
     kf_.measurementMatrix = cv::Mat::zeros(measureDim, stateDim, CV_32F);
     kf_.measurementMatrix.at<float>(0, 0) = 1.0f;
     kf_.measurementMatrix.at<float>(1, 1) = 1.0f;
     kf_.measurementMatrix.at<float>(2, 2) = 1.0f;
 
-    // 过程噪声协方差矩阵 Q - 设置不同维度的噪声
     cv::setIdentity(kf_.processNoiseCov, cv::Scalar::all(1e-2));
-    // 位置噪声比速度噪声大一些
+
     kf_.processNoiseCov.at<float>(0,0) = 1e-1;
     kf_.processNoiseCov.at<float>(1,1) = 1e-1;
     kf_.processNoiseCov.at<float>(2,2) = 1e-1;
@@ -138,13 +120,11 @@ KalmanFilter3D::KalmanFilter3D() : initialized_(false) {
     kf_.processNoiseCov.at<float>(4,4) = 1e-3;
     kf_.processNoiseCov.at<float>(5,5) = 1e-3;
 
-    // 测量噪声协方差矩阵 R - 测量值的不确定性
     cv::setIdentity(kf_.measurementNoiseCov, cv::Scalar::all(1e-1));
 
-    // 后验误差协方差矩阵 P 初始值 - 设置为0.1而不是1.0
     cv::setIdentity(kf_.errorCovPost, cv::Scalar::all(0.1));
 
-    // 初始化测量矩阵
+  
     measurement_ = cv::Mat(measureDim, 1, CV_32F);
 }
 
@@ -155,13 +135,12 @@ void KalmanFilter3D::init(const cv::Point3f& initial_pos) {
         return;
     }
 
-    // 设置初始状态：位置为测量值，速度为0
+ 
     kf_.statePost = cv::Mat::zeros(6, 1, CV_32F);
     kf_.statePost.at<float>(0) = initial_pos.x;
     kf_.statePost.at<float>(1) = initial_pos.y;
     kf_.statePost.at<float>(2) = initial_pos.z;
-    
-    // 重置后验协方差
+   
     cv::setIdentity(kf_.errorCovPost, cv::Scalar::all(0.1));
     
     initialized_ = true;
@@ -178,25 +157,24 @@ cv::Point3f KalmanFilter3D::predict() {
 }
 
 cv::Point3f KalmanFilter3D::update(const cv::Point3f& measurement) {
-    // 如果测量点无效，则跳过更新，返回预测值
+    
     if (!is_valid_point(measurement)) {
         NN_LOG_WARNING("KalmanFilter3D: Invalid measurement (%.2f, %.2f, %.2f), skipping update", 
                        measurement.x, measurement.y, measurement.z);
         return predict();
     }
     
-    // 如果尚未初始化，则用当前测量值初始化
+
     if (!initialized_) {
         init(measurement);
         return measurement;
     }
     
-    // 设置测量值
+
     measurement_.at<float>(0) = measurement.x;
     measurement_.at<float>(1) = measurement.y;
     measurement_.at<float>(2) = measurement.z;
-    
-    // 执行卡尔曼更新
+
     cv::Mat estimated = kf_.correct(measurement_);
     return cv::Point3f(estimated.at<float>(0), estimated.at<float>(1), estimated.at<float>(2));
 }

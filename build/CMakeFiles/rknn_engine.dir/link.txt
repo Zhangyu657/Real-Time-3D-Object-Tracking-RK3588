@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC -shared -Wl,-soname,librknn_engine.so -o librknn_engine.so CMakeFiles/rknn_engine.dir/src/engine/rknn_engine.cpp.o   -L/usr/local/lib  -Wl,-rpath,/usr/local/lib:/mnt/tfcard/yolov8_demo/realsense/deepsort/lvbo_pinghua/7.yolov8_letterbox/librknn_api/aarch64 ../librknn_api/aarch64/librknnrt.so 

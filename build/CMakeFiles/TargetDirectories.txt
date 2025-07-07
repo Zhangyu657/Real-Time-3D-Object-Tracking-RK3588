@@ -1,7 +1,0 @@
-/mnt/tfcard/yolov8_demo/realsense/deepsort/lvbo_pinghua/7.yolov8_letterbox/build/CMakeFiles/nn_process.dir
-/mnt/tfcard/yolov8_demo/realsense/deepsort/lvbo_pinghua/7.yolov8_letterbox/build/CMakeFiles/rknn_engine.dir
-/mnt/tfcard/yolov8_demo/realsense/deepsort/lvbo_pinghua/7.yolov8_letterbox/build/CMakeFiles/yolov8_lib.dir
-/mnt/tfcard/yolov8_demo/realsense/deepsort/lvbo_pinghua/7.yolov8_letterbox/build/CMakeFiles/draw_lib.dir
-/mnt/tfcard/yolov8_demo/realsense/deepsort/lvbo_pinghua/7.yolov8_letterbox/build/CMakeFiles/yolov8_thread_pool.dir
-/mnt/tfcard/yolov8_demo/realsense/deepsort/lvbo_pinghua/7.yolov8_letterbox/build/CMakeFiles/edit_cache.dir
-/mnt/tfcard/yolov8_demo/realsense/deepsort/lvbo_pinghua/7.yolov8_letterbox/build/CMakeFiles/rebuild_cache.dir
